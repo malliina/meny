@@ -10,6 +10,6 @@ object Generator {
   def generate() = {
     val dist = Paths.get("dist")
     Files.createDirectories(dist)
-    Pages().index("Meny")().write(dist.resolve("index.html"))
+    Pages().one.write(dist.resolve("index.html"))
   }
 }

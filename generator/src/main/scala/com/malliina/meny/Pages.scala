@@ -33,6 +33,10 @@ class Pages {
 
   val globalDescription = "Meny."
 
+  def one = index("Meny 1")(
+    p("Hi!!!")
+  )
+
   def index(titleText: String)(contents: Modifier*): TagPage = TagPage(
     html(lang := "en")(
       head(
