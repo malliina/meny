@@ -16,23 +16,23 @@ val frontend = project
   .settings(
     build := webpack.in(Compile, fastOptJS).value.map { af =>
       val dest = ((baseDirectory in ThisBuild).value / "dist" / af.data.name).toPath
+//      streams.value.log.info(s"Write $dest ${Files.size(dest)}")
       Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
     },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "scalatags" % "0.9.1"
     ),
+//    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
 //    crossTarget in (Compile, fastOptJS) := (baseDirectory in ThisBuild).value / "dist",
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
     version in webpack := "4.39.1",
     version in startWebpackDevServer := "3.7.2",
-    //    webpackBundlingMode := BundlingMode.LibraryOnly(),
+//    webpackExtraArgs := Seq("--profile", "--progress", "true"),
+//    webpackBundlingMode := BundlingMode.LibraryOnly(),
     webpackEmitSourceMaps := false,
     npmDependencies in Compile ++= Seq(
-      "@fortawesome/fontawesome-free" -> "5.10.1",
-      "bootstrap" -> "4.3.1",
-      "jquery" -> "3.4.1",
-      "popper.js" -> "1.15.0"
+      "swiper" -> "6.2.0"
     ),
     npmDevDependencies in Compile ++= Seq(
       "autoprefixer" -> "9.6.1",
@@ -62,7 +62,7 @@ val generator = project
       "ch.qos.logback" % "logback-core" % "1.2.3"
     ),
     watchSources := watchSources.value ++ Def.taskDyn(watchSources in frontend).value,
-    run in Compile := (run in Compile).dependsOn(fastOptJS in Compile in frontend).evaluated
+    run in Compile := (run in Compile).dependsOn(build in frontend).evaluated
   )
 
 val meny = project.in(file(".")).aggregate(frontend, generator)

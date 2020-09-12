@@ -34,8 +34,94 @@ class Pages {
   val globalDescription = "Meny."
 
   def one = index("Meny 1")(
-    p("Hi!!!")
+    p("Hi!")
   )
+
+  def meny = index("Johannas meny")(
+    div(`class` := "slider")(
+      a(href := "#menu-1")("1"),
+      a(href := "#menu-2")("2"),
+      a(href := "#menu-3")("3"),
+      div(`class` := "slides")(
+        div(id := "menu-1")("Meny 1"),
+        div(id := "menu-2")("Meny 2"),
+        div(id := "menu-3")("Meny 3")
+      )
+    )
+  )
+
+  def carousel = index("Johannas meny")(
+    tag("section")(`class` := "carousel", aria.label := "Gallery")(
+      ol(`class` := "carousel__viewport")(
+        li(id := "carousel__slide1", tabindex := "0", `class` := "carousel__slide")(
+          div(`class` := "carousel__snapper")(
+            a(href := "#carousel__slide3", `class` := "caoursel__prev")("Go to last slide"),
+            a(href := "#carousel__slide2", `class` := "caoursel__next")("Go to next slide")
+          )
+        ),
+        li(id := "carousel__slide2", tabindex := "0", `class` := "carousel__slide")(
+          div(`class` := "carousel__snapper")(
+            a(href := "#carousel__slide1", `class` := "caoursel__prev")("Go to prev slide"),
+            a(href := "#carousel__slide3", `class` := "caoursel__next")("Go to next slide")
+          )
+        ),
+        li(id := "carousel__slide3", tabindex := "0", `class` := "carousel__slide")(
+          div(`class` := "carousel__snapper")(
+            a(href := "#carousel__slide2", `class` := "caoursel__prev")("Go to prev slide"),
+            a(href := "#carousel__slide1", `class` := "caoursel__next")("Go to first slide")
+          )
+        )
+      )
+    )
+  )
+
+  def swiper = index("Johannas meny")(
+    div(`class` := "swiper-container")(
+      div(`class` := "swiper-wrapper meny-wrapper")(
+        menuItem(
+          1,
+          p("Välkomstdrink"),
+          p("Vitlöksbröd med tzatziki"),
+          dish("Hönsfrikassé", "Iskall Vichy"),
+          dish("Blåbärspaj med vaniljsås", "Cappuccino")
+        ),
+        menuItem(
+          2,
+          "Välkomstdrink",
+          "Brieost med vitlöksbatong",
+          dish("Pizza bolognese med ananas", "Coca-Cola med is & lime"),
+          dish("Äppelpaj med glass", "Dessertvin")
+        ),
+        menuItem(
+          3,
+          "Välkomstdrink",
+          "Karelsk pirog & äggsmör",
+          dish("Currywurst med pommes frites", "Pilsner Urquell -öl"),
+          dish("Banana split", "Dessertvin")
+        )
+      ),
+      div(`class` := "swiper-button swiper-button-next"),
+      div(`class` := "swiper-button swiper-button-prev")
+    )
+  )
+
+  def dish(food: String, drink: String) = modifier(p(food), separator, p(drink))
+
+  def separator = hr
+
+  def menuItem(num: Int, init: Modifier, one: Modifier, two: Modifier, three: Modifier) =
+    div(`class` := "swiper-slide meny")(
+      h1(`class` := "meny-title")(s"Meny $num"),
+      init,
+      menuSeparator,
+      one,
+      menuSeparator,
+      two,
+      menuSeparator,
+      three
+    )
+
+  def menuSeparator = div(`class` := "meny-hr")("**************************")
 
   def index(titleText: String)(contents: Modifier*): TagPage = TagPage(
     html(lang := "en")(
@@ -55,12 +141,17 @@ class Pages {
         meta(name := "twitter:site", content := "@kungmalle"),
         meta(name := "twitter:creator", content := "@kungmalle"),
         meta(property := "og:title", content := titleText),
-        meta(property := "og:description", content := globalDescription)
+        meta(property := "og:description", content := globalDescription),
         //styleAt("styles-fonts.css"),
         //styleAt("styles-main.css")
+        link(rel := "stylesheet", href := "styles.css"),
+        link(rel := "stylesheet", href := "vendors.css")
       ),
       body(
-        contents :+ script(src := "frontend-fastopt.js", defer) // :+ scriptAt("main.js", defer)
+        contents :+ modifier(
+//          script(src := "frontend-fastopt-loader.js", defer),
+          script(src := "frontend-fastopt.js", defer)
+        )
       )
     )
   )

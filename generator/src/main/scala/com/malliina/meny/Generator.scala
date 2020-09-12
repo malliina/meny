@@ -10,6 +10,10 @@ object Generator {
   def generate() = {
     val dist = Paths.get("dist")
     Files.createDirectories(dist)
-    Pages().one.write(dist.resolve("index.html"))
+    val pages = Pages()
+    pages.one.write(dist.resolve("index.html"))
+    pages.meny.write(dist.resolve("meny.html"))
+    pages.carousel.write(dist.resolve("carousel.html"))
+    pages.swiper.write(dist.resolve("swiper.html"))
   }
 }
