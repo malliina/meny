@@ -145,7 +145,8 @@ class Pages {
         //styleAt("styles-fonts.css"),
         //styleAt("styles-main.css")
         link(rel := "stylesheet", href := "styles.css"),
-        link(rel := "stylesheet", href := "vendors.css")
+        link(rel := "stylesheet", href := "vendors.css"),
+        link(rel := "stylesheet", href := "fonts.css")
       ),
       body(
         contents :+ modifier(
