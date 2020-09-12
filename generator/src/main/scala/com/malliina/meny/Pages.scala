@@ -55,15 +55,15 @@ class Pages(isProd: Boolean) {
         ),
         menuItem(
           2,
-          "Välkomstdrink",
-          "Brieost med vitlöksbatong",
+          p("Välkomstdrink"),
+          p("Brieost med vitlöksbatong"),
           dish("Pizza bolognese med ananas", "Coca-Cola med is & lime"),
           dish("Äppelpaj med glass", "Dessertvin")
         ),
         menuItem(
           3,
-          "Välkomstdrink",
-          "Karelsk pirog & äggsmör",
+          p("Välkomstdrink"),
+          p("Karelsk pirog & äggsmör"),
           dish("Currywurst med pommes frites", "Pilsner Urquell -öl"),
           dish("Banana split", "Dessertvin")
         )

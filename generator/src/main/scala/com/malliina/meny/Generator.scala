@@ -15,5 +15,6 @@ object Generator {
     Files.createDirectories(dist)
     val pages = Pages(isProd)
     pages.swiper.write(dist.resolve("index.html"))
+    NetlifyClient.writeHeaders(dist)
   }
 }
