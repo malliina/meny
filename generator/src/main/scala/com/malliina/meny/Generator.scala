@@ -3,17 +3,17 @@ package com.malliina.meny
 import java.nio.file.{Files, Paths}
 
 object Generator {
+  val log = AppLogger(getClass)
+
   def main(args: Array[String]): Unit = {
-    generate()
+    log.info(s"Generating ${args.mkString(", ")}")
+    generate(args.contains("prod"))
   }
 
-  def generate() = {
-    val dist = Paths.get("dist")
+  def generate(isProd: Boolean) = {
+    val dist = Paths.get("target/site")
     Files.createDirectories(dist)
-    val pages = Pages()
-    pages.one.write(dist.resolve("index.html"))
-    pages.meny.write(dist.resolve("meny.html"))
-    pages.carousel.write(dist.resolve("carousel.html"))
-    pages.swiper.write(dist.resolve("swiper.html"))
+    val pages = Pages(isProd)
+    pages.swiper.write(dist.resolve("index.html"))
   }
 }

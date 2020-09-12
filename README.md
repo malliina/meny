@@ -1,8 +1,6 @@
 # meny
 
-## To do
+Site [johannasmeny.com](https://johannasmeny.com).
 
-- SASS
-- Content
-- Domain
-- Netlify
+## Development
+

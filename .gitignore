@@ -8,3 +8,7 @@ target/
 hydra.sbt
 .bloop
 out
+dist
+
+# Local Netlify folder
+.netlify

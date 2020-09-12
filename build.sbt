@@ -8,28 +8,45 @@ inThisBuild(
   )
 )
 
-val build = taskKey[Seq[File]]("build frontend assets")
+val Dev = config("dev")
+val Prod = config("prod")
+val build = taskKey[Unit]("builds app")
 
 val frontend = project
   .in(file("frontend"))
   .enablePlugins(GeneratorClientPlugin)
   .settings(
-    build := webpack.in(Compile, fastOptJS).value.map { af =>
-      val dest = ((baseDirectory in ThisBuild).value / "dist" / af.data.name).toPath
-//      streams.value.log.info(s"Write $dest ${Files.size(dest)}")
+    build in (Compile, fullOptJS) := webpack.in(Compile, fullOptJS).value.map { af =>
+      val destDir = (baseDirectory in ThisBuild).value / "target" / "site"
+      Files.createDirectories(destDir.toPath)
+      val dest = (destDir / af.data.name).toPath
+      sLog.value.info(s"Write  $dest ${af.metadata}")
+      Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
+    },
+    build in (Compile, fastOptJS) := webpack.in(Compile, fastOptJS).value.map { af =>
+      val destDir = (baseDirectory in ThisBuild).value / "target" / "site"
+      Files.createDirectories(destDir.toPath)
+      val name = af.metadata.get(BundlerFileTypeAttr) match {
+        case Some(BundlerFileType.Application) => "app.js"
+        case Some(BundlerFileType.Library)     => "library.js"
+        case Some(BundlerFileType.Loader)      => "loader.js"
+        case _                                 => af.data.name
+      }
+      val dest = (destDir / name).toPath
+      sLog.value.info(
+        s"Write $dest from ${af.data.name} ${af.metadata} ${af.metadata.get(BundlerFileTypeAttr)}"
+      )
       Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
     },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "scalatags" % "0.9.1"
     ),
-//    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-//    crossTarget in (Compile, fastOptJS) := (baseDirectory in ThisBuild).value / "dist",
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
     version in webpack := "4.39.1",
     version in startWebpackDevServer := "3.7.2",
-//    webpackExtraArgs := Seq("--profile", "--progress", "true"),
-//    webpackBundlingMode := BundlingMode.LibraryOnly(),
+    webpackBundlingMode in (Compile, fastOptJS) := BundlingMode.LibraryOnly(),
+    webpackBundlingMode in (Compile, fullOptJS) := BundlingMode.Application,
     webpackEmitSourceMaps := false,
     npmDependencies in Compile ++= Seq(
       "swiper" -> "6.2.0"
@@ -62,7 +79,19 @@ val generator = project
       "ch.qos.logback" % "logback-core" % "1.2.3"
     ),
     watchSources := watchSources.value ++ Def.taskDyn(watchSources in frontend).value,
-    run in Compile := (run in Compile).dependsOn(build in frontend).evaluated
+    build in Prod := (run in Compile)
+      .toTask(" prod")
+      .dependsOn(build in (Compile, fullOptJS) in frontend)
+      .value,
+    build in Dev := (run in Compile)
+      .toTask(" dev")
+      .dependsOn(build in (Compile, fastOptJS) in frontend)
+      .value
   )
 
-val meny = project.in(file(".")).aggregate(frontend, generator)
+val meny = project
+  .in(file("."))
+  .aggregate(frontend, generator)
+  .settings(
+    build := build.in(generator, Dev).value
+  )

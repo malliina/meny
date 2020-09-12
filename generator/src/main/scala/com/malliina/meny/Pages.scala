@@ -12,9 +12,8 @@ import scalatags.text.Builder
 import scala.collection.JavaConverters.asScalaIteratorConverter
 
 object Pages {
-  def apply(): Pages = new Pages()
+  def apply(isProd: Boolean): Pages = new Pages(isProd)
 
-  val domain = FullUrl.https("todo.com", "")
   implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
 
   val time = tag("time")
@@ -27,53 +26,22 @@ object Pages {
     t.setAttr(a.name, Builder.GenericAttrValueSource(stringify(v)))
 }
 
-class Pages {
+class Pages(isProd: Boolean) {
   val listFile = "list.html"
   val remoteListUri = "list"
 
   val globalDescription = "Meny."
 
-  def one = index("Meny 1")(
-    p("Hi!")
-  )
-
-  def meny = index("Johannas meny")(
-    div(`class` := "slider")(
-      a(href := "#menu-1")("1"),
-      a(href := "#menu-2")("2"),
-      a(href := "#menu-3")("3"),
-      div(`class` := "slides")(
-        div(id := "menu-1")("Meny 1"),
-        div(id := "menu-2")("Meny 2"),
-        div(id := "menu-3")("Meny 3")
+  val scripts =
+    if (isProd) {
+      scriptAt("frontend-opt.js", defer)
+    } else {
+      modifier(
+        scriptAt("library.js"),
+        scriptAt("loader.js"),
+        scriptAt("app.js")
       )
-    )
-  )
-
-  def carousel = index("Johannas meny")(
-    tag("section")(`class` := "carousel", aria.label := "Gallery")(
-      ol(`class` := "carousel__viewport")(
-        li(id := "carousel__slide1", tabindex := "0", `class` := "carousel__slide")(
-          div(`class` := "carousel__snapper")(
-            a(href := "#carousel__slide3", `class` := "caoursel__prev")("Go to last slide"),
-            a(href := "#carousel__slide2", `class` := "caoursel__next")("Go to next slide")
-          )
-        ),
-        li(id := "carousel__slide2", tabindex := "0", `class` := "carousel__slide")(
-          div(`class` := "carousel__snapper")(
-            a(href := "#carousel__slide1", `class` := "caoursel__prev")("Go to prev slide"),
-            a(href := "#carousel__slide3", `class` := "caoursel__next")("Go to next slide")
-          )
-        ),
-        li(id := "carousel__slide3", tabindex := "0", `class` := "carousel__slide")(
-          div(`class` := "carousel__snapper")(
-            a(href := "#carousel__slide2", `class` := "caoursel__prev")("Go to prev slide"),
-            a(href := "#carousel__slide1", `class` := "caoursel__next")("Go to first slide")
-          )
-        )
-      )
-    )
-  )
+    }
 
   def swiper = index("Johannas meny")(
     div(`class` := "swiper-container")(
@@ -102,7 +70,8 @@ class Pages {
       ),
       div(`class` := "swiper-button swiper-button-next"),
       div(`class` := "swiper-button swiper-button-prev")
-    )
+    ),
+    footer(`class` := "meny-footer")
   )
 
   def dish(food: String, drink: String) = modifier(p(food), separator, p(drink))
@@ -144,15 +113,12 @@ class Pages {
         meta(property := "og:description", content := globalDescription),
         //styleAt("styles-fonts.css"),
         //styleAt("styles-main.css")
-        link(rel := "stylesheet", href := "styles.css"),
-        link(rel := "stylesheet", href := "vendors.css"),
-        link(rel := "stylesheet", href := "fonts.css")
+        styleAt("styles.css"),
+        styleAt("vendors.css"),
+        styleAt("fonts.css")
       ),
       body(
-        contents :+ modifier(
-//          script(src := "frontend-fastopt-loader.js", defer),
-          script(src := "frontend-fastopt.js", defer)
-        )
+        contents :+ scripts
       )
     )
   )
@@ -162,14 +128,13 @@ class Pages {
     time(datetime := localDate)(localDate)
   }
 
-  def styleAt(file: String) =
-    link(rel := "stylesheet", href := findAsset(s"css/$file"))
+  def styleAt(file: String) = link(rel := "stylesheet", href := findAsset(file))
 
   def scriptAt(file: String, modifiers: Modifier*) = script(src := findAsset(file), modifiers)
 
   def findAsset(file: String): String = {
     val root = Paths.get("target").resolve("site")
-    val path = root.resolve("assets").resolve(file)
+    val path = root.resolve(file)
     val dir = path.getParent
     val candidates = Files.list(dir).iterator().asScala.toList
     val lastSlash = file.lastIndexOf("/")

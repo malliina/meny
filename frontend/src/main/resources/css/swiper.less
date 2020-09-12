@@ -17,17 +17,12 @@
   }
 }
 
-hr {
-  clear: both;
-  visibility: hidden;
-  padding: 10px;
-}
-
 .meny {
   width: 100%;
 }
 
 .meny-hr {
+  font-size: 16px;
   padding: 40px;
 
   @media (min-width: 1023px) {
@@ -37,4 +32,16 @@ hr {
 
 .swiper-button {
   opacity: 0.2;
+
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
+.meny-footer {
+  padding: 50px;
+
+  @media (min-width: 1023px) {
+    padding: 70px
+  }
 }

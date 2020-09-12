@@ -25,14 +25,7 @@ const WebApp = Merge(ScalaJS, {
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
         use: [
-          { loader: 'file-loader', options: { name: 'assets/static/fonts/[name].[hash].[ext]' } }
-        ],
-        include: /node_modules/
-      },
-      {
-        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        use: [
-          { loader: 'url-loader', options: { limit: 100000, name: 'static2/fonts/[name]-[hash].[ext]' } }
+          { loader: 'url-loader' }
         ],
         exclude: /node_modules/
       },
@@ -47,12 +40,12 @@ const WebApp = Merge(ScalaJS, {
       }
     ]
   },
-  output: {
-    filename: '[name].js'
-  },
-  plugins: [
-    new MiniCssExtractPlugin({filename: '[name].css'})
-  ]
+  // output: {
+  //   filename: '[name].js'
+  // },
+  // plugins: [
+  //   new MiniCssExtractPlugin({filename: '[name].css'})
+  // ]
 });
 
 module.exports = WebApp;
