@@ -4,7 +4,7 @@ inThisBuild(
   Seq(
     organization := "com.malliina",
     version := "1.0.0",
-    scalaVersion := "2.13.3"
+    scalaVersion := "2.13.6"
   )
 )
 
@@ -12,19 +12,21 @@ val Dev = config("dev")
 val Prod = config("prod")
 val build = taskKey[Unit]("builds app")
 
+val scalatagsVersion = GeneratorClientPlugin.scalatagsVersion
+
 val frontend = project
   .in(file("frontend"))
   .enablePlugins(GeneratorClientPlugin)
   .settings(
-    build in (Compile, fullOptJS) := webpack.in(Compile, fullOptJS).value.map { af =>
-      val destDir = (baseDirectory in ThisBuild).value / "target" / "site"
+    Compile / fullOptJS / build := (Compile / fullOptJS / webpack).value.map { af =>
+      val destDir = (ThisBuild / baseDirectory).value / "target" / "site"
       Files.createDirectories(destDir.toPath)
       val dest = (destDir / af.data.name).toPath
       sLog.value.info(s"Write  $dest ${af.metadata}")
       Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
     },
-    build in (Compile, fastOptJS) := webpack.in(Compile, fastOptJS).value.map { af =>
-      val destDir = (baseDirectory in ThisBuild).value / "target" / "site"
+    Compile / fastOptJS / build := (Compile / fastOptJS / webpack).value.map { af =>
+      val destDir = (ThisBuild / baseDirectory).value / "target" / "site"
       Files.createDirectories(destDir.toPath)
       val name = af.metadata.get(BundlerFileTypeAttr) match {
         case Some(BundlerFileType.Application) => "app.js"
@@ -40,18 +42,18 @@ val frontend = project
     },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % "0.9.1"
+      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
     ),
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
-    version in webpack := "4.39.1",
-    version in startWebpackDevServer := "3.7.2",
-    webpackBundlingMode in (Compile, fastOptJS) := BundlingMode.LibraryOnly(),
-    webpackBundlingMode in (Compile, fullOptJS) := BundlingMode.Application,
+    webpack / version := "4.39.1",
+    startWebpackDevServer / version := "3.7.2",
+    Compile / fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
+    Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
     webpackEmitSourceMaps := false,
-    npmDependencies in Compile ++= Seq(
-      "swiper" -> "6.2.0"
+    Compile / npmDependencies ++= Seq(
+      "swiper" -> "6.7.0"
     ),
-    npmDevDependencies in Compile ++= Seq(
+    Compile / npmDevDependencies ++= Seq(
       "autoprefixer" -> "9.6.1",
       "cssnano" -> "4.1.10",
       "css-loader" -> "3.2.0",
@@ -72,20 +74,20 @@ val generator = project
   .in(file("generator"))
   .settings(
     libraryDependencies ++= Seq(
-      "com.malliina" %% "primitives" % "1.17.0",
-      "com.lihaoyi" %% "scalatags" % "0.9.1",
-      "org.slf4j" % "slf4j-api" % "1.7.25",
+      "com.malliina" %% "primitives" % "1.19.0",
+      "com.lihaoyi" %% "scalatags" % scalatagsVersion,
+      "org.slf4j" % "slf4j-api" % "1.7.30",
       "ch.qos.logback" % "logback-classic" % "1.2.3",
       "ch.qos.logback" % "logback-core" % "1.2.3"
     ),
-    watchSources := watchSources.value ++ Def.taskDyn(watchSources in frontend).value,
-    build in Prod := (run in Compile)
+    watchSources := watchSources.value ++ Def.taskDyn(frontend / watchSources).value,
+    Prod / build := (Compile / run)
       .toTask(" prod")
-      .dependsOn(build in (Compile, fullOptJS) in frontend)
+      .dependsOn(frontend / Compile / fullOptJS / build)
       .value,
-    build in Dev := (run in Compile)
+    Dev / build := (Compile / run)
       .toTask(" dev")
-      .dependsOn(build in (Compile, fastOptJS) in frontend)
+      .dependsOn(frontend / Compile / fastOptJS / build)
       .value
   )
 
@@ -93,5 +95,7 @@ val meny = project
   .in(file("."))
   .aggregate(frontend, generator)
   .settings(
-    build := build.in(generator, Dev).value
+    build := (generator / Dev / build).value
   )
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
