@@ -1,0 +1,19 @@
+name: Test
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Netlify
+        uses: netlify/actions/cli@master
+      - name: Set up Scala
+        uses: olafurpg/setup-scala@v10
+        with:
+          java-version: "adopt@1.11"
+      - name: Run tests
+        run: sbt test

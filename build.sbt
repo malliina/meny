@@ -1,4 +1,5 @@
 import java.nio.file.{Files, StandardCopyOption}
+import complete.DefaultParsers.spaceDelimited
 
 inThisBuild(
   Seq(
@@ -10,7 +11,9 @@ inThisBuild(
 
 val Dev = config("dev")
 val Prod = config("prod")
-val build = taskKey[Unit]("builds app")
+val build = taskKey[Unit]("Builds app")
+val deploy = inputKey[Unit]("Deploys the site")
+val siteDir = settingKey[File]("Site directory")
 
 val scalatagsVersion = GeneratorClientPlugin.scalatagsVersion
 
@@ -18,15 +21,17 @@ val frontend = project
   .in(file("frontend"))
   .enablePlugins(GeneratorClientPlugin)
   .settings(
+    siteDir := (ThisBuild / baseDirectory).value / "target" / "site",
     Compile / fullOptJS / build := (Compile / fullOptJS / webpack).value.map { af =>
-      val destDir = (ThisBuild / baseDirectory).value / "target" / "site"
+      val destDir = siteDir.value
+      FileIO.deleteDirectory(destDir.toPath)
       Files.createDirectories(destDir.toPath)
       val dest = (destDir / af.data.name).toPath
-      sLog.value.info(s"Write  $dest ${af.metadata}")
+      sLog.value.info(s"Write $dest ${af.metadata}")
       Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
     },
     Compile / fastOptJS / build := (Compile / fastOptJS / webpack).value.map { af =>
-      val destDir = (ThisBuild / baseDirectory).value / "target" / "site"
+      val destDir = siteDir.value
       Files.createDirectories(destDir.toPath)
       val name = af.metadata.get(BundlerFileTypeAttr) match {
         case Some(BundlerFileType.Application) => "app.js"
@@ -88,7 +93,18 @@ val generator = project
     Dev / build := (Compile / run)
       .toTask(" dev")
       .dependsOn(frontend / Compile / fastOptJS / build)
-      .value
+      .value,
+    deploy := {
+      val args = spaceDelimited("<arg>").parsed
+      NPM
+        .runProcessSync(
+          args.mkString(" "),
+          (ThisBuild / baseDirectory).value,
+          streams.value.log
+        )
+    },
+    Prod / deploy := deploy.toTask(" netlify deploy --prod").dependsOn(Prod / build).value,
+    Dev / deploy := deploy.toTask(" netlify deploy").dependsOn(Dev / build).value
   )
 
 val meny = project
