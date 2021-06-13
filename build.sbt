@@ -24,7 +24,7 @@ val frontend = project
     siteDir := (ThisBuild / baseDirectory).value / "target" / "site",
     Compile / fullOptJS / build := (Compile / fullOptJS / webpack).value.map { af =>
       val destDir = siteDir.value
-      FileIO.deleteDirectory(destDir.toPath)
+      //FileIO.deleteDirectory(destDir.toPath)
       Files.createDirectories(destDir.toPath)
       val dest = (destDir / af.data.name).toPath
       sLog.value.info(s"Write $dest ${af.metadata}")
