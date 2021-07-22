@@ -10,4 +10,4 @@ Navigate to http://localhost:10101.
 
 ## Deployment
 
-    sbt release
+    sbt Prod/deploy

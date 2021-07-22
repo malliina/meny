@@ -99,12 +99,11 @@ val generator = project
       .value,
     deploy := {
       val args = spaceDelimited("<arg>").parsed
-      NPM
-        .runProcessSync(
-          args.mkString(" "),
-          (ThisBuild / baseDirectory).value,
-          streams.value.log
-        )
+      NPM.runProcessSync(
+        args.mkString(" "),
+        (ThisBuild / baseDirectory).value,
+        streams.value.log
+      )
     },
     Prod / deploy := deploy.toTask(" netlify deploy --prod").dependsOn(Prod / build).value,
     Dev / deploy := deploy.toTask(" netlify deploy").dependsOn(Dev / build).value
