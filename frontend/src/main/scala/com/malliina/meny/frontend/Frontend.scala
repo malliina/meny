@@ -6,12 +6,10 @@ import scala.scalajs.js.annotation.JSImport
 
 object Frontend {
   def main(args: Array[String]): Unit = {
-    println("Front!!")
     val swiper = new Swiper(
       ".swiper-container",
       SwiperOptions("horizontal", true, NavOptions(".swiper-button-next", ".swiper-button-prev"))
     )
-    println("Init complete.")
   }
 }
 

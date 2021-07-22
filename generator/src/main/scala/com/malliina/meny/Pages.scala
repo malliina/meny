@@ -1,18 +1,18 @@
 package com.malliina.meny
 
-import java.nio.file.{Files, Paths}
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
-import com.malliina.meny.Pages._
 import com.malliina.http.FullUrl
+import com.malliina.live.LiveReload
+import com.malliina.meny.Pages._
 import scalatags.Text.all._
 import scalatags.text.Builder
 
-import scala.collection.JavaConverters.asScalaIteratorConverter
+import java.nio.file.{Files, Path}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 object Pages {
-  def apply(isProd: Boolean): Pages = new Pages(isProd)
+  def apply(isProd: Boolean, root: Path): Pages = new Pages(isProd, root)
 
   implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
 
@@ -26,7 +26,7 @@ object Pages {
     t.setAttr(a.name, Builder.GenericAttrValueSource(stringify(v)))
 }
 
-class Pages(isProd: Boolean) {
+class Pages(isProd: Boolean, root: Path) {
   val listFile = "list.html"
   val remoteListUri = "list"
 
@@ -39,11 +39,12 @@ class Pages(isProd: Boolean) {
       modifier(
         scriptAt("library.js"),
         scriptAt("loader.js"),
-        scriptAt("app.js")
+        scriptAt("app.js"),
+        script(src := LiveReload.script)
       )
     }
 
-  def swiper = index("Johannas meny")(
+  def meny2020 = index("Johannas meny")(
     div(`class` := "swiper-container")(
       div(`class` := "swiper-wrapper meny-wrapper")(
         menuItem(
@@ -66,6 +67,37 @@ class Pages(isProd: Boolean) {
           p("Karelsk pirog & äggsmör"),
           dish("Currywurst med pommes frites", "Pilsner Urquell -öl"),
           dish("Banana split", "Dessertvin")
+        )
+      ),
+      div(`class` := "swiper-button swiper-button-next"),
+      div(`class` := "swiper-button swiper-button-prev")
+    ),
+    footer(`class` := "meny-footer")
+  )
+
+  def meny2021 = index("Johannas meny 2021")(
+    div(`class` := "swiper-container")(
+      div(`class` := "swiper-wrapper meny-wrapper")(
+        menuItem(
+          1,
+          p("Kombucha med bär"),
+          p("Fruktsallad"),
+          dish("Friterad höna och potatis med gourmet-såser", "Leffe Blond"),
+          dish("Ostkaka med jordgubbar", "Cafe Latte")
+        ),
+        menuItem(
+          2,
+          p("Tropisk saft med krossad is och ingefära-shot"),
+          p("Smörgåstårta"),
+          dish("Fitness-sallad", "Vichy on the rocks"),
+          dish("Nougat-tryffel chokladdröm", "Sött dessertvin")
+        ),
+        menuItem(
+          3,
+          p("Prosecco"),
+          p("Jordgubbar, hallon och blåbärsmix"),
+          dish("Osthamburgare med bacon", "Iskall Coca-Cola"),
+          dish("Toscakaka med vispgrädde", "Cloudy Apple med is")
         )
       ),
       div(`class` := "swiper-button swiper-button-next"),
@@ -133,7 +165,6 @@ class Pages(isProd: Boolean) {
   def scriptAt(file: String, modifiers: Modifier*) = script(src := findAsset(file), modifiers)
 
   def findAsset(file: String): String = {
-    val root = Paths.get("target").resolve("site")
     val path = root.resolve(file)
     val dir = path.getParent
     val candidates = Files.list(dir).iterator().asScala.toList

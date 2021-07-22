@@ -56,7 +56,7 @@ val frontend = project
     Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
     webpackEmitSourceMaps := false,
     Compile / npmDependencies ++= Seq(
-      "swiper" -> "6.7.0"
+      "swiper" -> "6.7.5"
     ),
     Compile / npmDevDependencies ++= Seq(
       "autoprefixer" -> "9.6.1",
@@ -77,6 +77,7 @@ val frontend = project
 
 val generator = project
   .in(file("generator"))
+  .enablePlugins(LiveReloadPlugin)
   .settings(
     libraryDependencies ++= Seq(
       "com.malliina" %% "primitives" % "1.19.0",
@@ -85,13 +86,15 @@ val generator = project
       "ch.qos.logback" % "logback-classic" % "1.2.3",
       "ch.qos.logback" % "logback-core" % "1.2.3"
     ),
+    liveReloadRoot := (frontend / siteDir).value.toPath,
+    refreshBrowsers := refreshBrowsers.triggeredBy(Dev / build).value,
     watchSources := watchSources.value ++ Def.taskDyn(frontend / watchSources).value,
     Prod / build := (Compile / run)
-      .toTask(" prod")
+      .toTask(s" prod target/site")
       .dependsOn(frontend / Compile / fullOptJS / build)
       .value,
     Dev / build := (Compile / run)
-      .toTask(" dev")
+      .toTask(s" dev target/site")
       .dependsOn(frontend / Compile / fastOptJS / build)
       .value,
     deploy := {
