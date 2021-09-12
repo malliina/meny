@@ -143,8 +143,6 @@ class Pages(isProd: Boolean, root: Path) {
         meta(name := "twitter:creator", content := "@kungmalle"),
         meta(property := "og:title", content := titleText),
         meta(property := "og:description", content := globalDescription),
-        //styleAt("styles-fonts.css"),
-        //styleAt("styles-main.css")
         styleAt("styles.css"),
         styleAt("vendors.css"),
         styleAt("fonts.css")

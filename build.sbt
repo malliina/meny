@@ -1,3 +1,5 @@
+import com.malliina.sbtutils.SbtUtils
+
 import java.nio.file.{Files, StandardCopyOption}
 import complete.DefaultParsers.spaceDelimited
 
@@ -5,7 +7,7 @@ inThisBuild(
   Seq(
     organization := "com.malliina",
     version := "1.0.0",
-    scalaVersion := "2.13.6"
+    scalaVersion := "3.0.2"
   )
 )
 
@@ -24,7 +26,6 @@ val frontend = project
     siteDir := (ThisBuild / baseDirectory).value / "target" / "site",
     Compile / fullOptJS / build := (Compile / fullOptJS / webpack).value.map { af =>
       val destDir = siteDir.value
-      //FileIO.deleteDirectory(destDir.toPath)
       Files.createDirectories(destDir.toPath)
       val dest = (destDir / af.data.name).toPath
       sLog.value.info(s"Write $dest ${af.metadata}")
@@ -47,7 +48,7 @@ val frontend = project
     },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
+      ("com.lihaoyi" %%% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
     ),
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
     webpack / version := "4.39.1",
@@ -79,12 +80,9 @@ val generator = project
   .in(file("generator"))
   .enablePlugins(LiveReloadPlugin)
   .settings(
-    libraryDependencies ++= Seq(
-      "com.malliina" %% "primitives" % "1.19.0",
-      "com.lihaoyi" %% "scalatags" % scalatagsVersion,
-      "org.slf4j" % "slf4j-api" % "1.7.30",
-      "ch.qos.logback" % "logback-classic" % "1.2.3",
-      "ch.qos.logback" % "logback-core" % "1.2.3"
+    libraryDependencies ++= SbtUtils.loggingDeps ++ Seq(
+      "com.malliina" %% "primitives" % "3.0.0",
+      ("com.lihaoyi" %% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
     ),
     liveReloadRoot := (frontend / siteDir).value.toPath,
     refreshBrowsers := refreshBrowsers.triggeredBy(Dev / build).value,

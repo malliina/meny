@@ -19,9 +19,8 @@ object GeneratorClientPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "1.1.0",
-      "com.lihaoyi" %%% "scalatags" % scalatagsVersion,
-      "com.typesafe.play" %%% "play-json" % "2.9.2"
+      ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13),
+      ("com.lihaoyi" %%% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
     ),
     scalaJSUseMainModuleInitializer := true,
     fastOptJS / webpackConfigFile := Some(baseDirectory.value / "webpack.dev.config.js"),
