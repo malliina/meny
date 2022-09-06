@@ -12,8 +12,6 @@ import java.time.format.DateTimeFormatter
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 object Pages {
-  def apply(isProd: Boolean, root: Path): Pages = new Pages(isProd, root)
-
   implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
 
   val time = tag("time")
