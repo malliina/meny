@@ -51,8 +51,8 @@ val frontend = project
       ("com.lihaoyi" %%% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
     ),
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
-    webpack / version := "4.39.1",
-    startWebpackDevServer / version := "3.7.2",
+    webpack / version := "5.74.0",
+    startWebpackDevServer / version := "4.11.0",
     Compile / fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
     Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
     webpackEmitSourceMaps := false,
@@ -62,17 +62,14 @@ val frontend = project
     Compile / npmDevDependencies ++= Seq(
       "autoprefixer" -> "9.6.1",
       "cssnano" -> "4.1.10",
-      "css-loader" -> "3.2.0",
-      "file-loader" -> "4.2.0",
-      "less" -> "3.9.0",
-      "less-loader" -> "5.0.0",
-      "mini-css-extract-plugin" -> "0.8.0",
+      "css-loader" -> "6.7.1",
+      "less" -> "4.1.3",
+      "less-loader" -> "11.0.0",
+      "mini-css-extract-plugin" -> "2.6.1",
       "postcss-import" -> "12.0.1",
       "postcss-loader" -> "3.0.0",
       "postcss-preset-env" -> "6.7.0",
-      "style-loader" -> "1.0.0",
-      "url-loader" -> "2.1.0",
-      "webpack-merge" -> "4.2.1"
+      "webpack-merge" -> "5.8.0"
     )
   )
 

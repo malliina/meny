@@ -2,8 +2,9 @@ package com.malliina.meny
 
 import com.malliina.http.FullUrl
 import com.malliina.live.LiveReload
-import com.malliina.meny.Pages._
-import scalatags.Text.all._
+import com.malliina.meny.Pages.*
+import scalatags.Text
+import scalatags.Text.all.*
 import scalatags.text.Builder
 
 import java.nio.file.{Files, Path}
@@ -25,9 +26,6 @@ object Pages {
 }
 
 class Pages(isProd: Boolean, root: Path) {
-  val listFile = "list.html"
-  val remoteListUri = "list"
-
   val globalDescription = "Meny."
 
   val scripts =
@@ -151,14 +149,11 @@ class Pages(isProd: Boolean, root: Path) {
     )
   )
 
-  def format(date: LocalDate) = {
-    val localDate = DateTimeFormatter.ISO_LOCAL_DATE.format(date)
-    time(datetime := localDate)(localDate)
-  }
+  def styleAt(file: String): Text.TypedTag[String] =
+    link(rel := "stylesheet", href := findAsset(file))
 
-  def styleAt(file: String) = link(rel := "stylesheet", href := findAsset(file))
-
-  def scriptAt(file: String, modifiers: Modifier*) = script(src := findAsset(file), modifiers)
+  def scriptAt(file: String, modifiers: Modifier*): Text.TypedTag[String] =
+    script(src := findAsset(file), modifiers)
 
   def findAsset(file: String): String = {
     val path = root.resolve(file)
