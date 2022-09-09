@@ -14,13 +14,13 @@ import scalajsbundler.sbtplugin.ScalaJSBundlerPlugin.autoImport.{
 }
 
 object GeneratorClientPlugin extends AutoPlugin {
-  val scalatagsVersion = "0.9.4"
+  val scalatagsVersion = "0.11.1"
   override def requires = ScalaJSBundlerPlugin
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     libraryDependencies ++= Seq(
-      ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13),
-      ("com.lihaoyi" %%% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
+      "org.scala-js" %%% "scalajs-dom" % "2.2.0",
+      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
     ),
     scalaJSUseMainModuleInitializer := true,
     fastOptJS / webpackConfigFile := Some(baseDirectory.value / "webpack.dev.config.js"),
