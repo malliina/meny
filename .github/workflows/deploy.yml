@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2
@@ -20,6 +20,9 @@ jobs:
         uses: olafurpg/setup-scala@v10
         with:
           java-version: "adopt@1.11"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - name: Run tests
         run: sbt test
       - name: Deploy site
