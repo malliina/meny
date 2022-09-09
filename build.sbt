@@ -6,8 +6,8 @@ import complete.DefaultParsers.spaceDelimited
 inThisBuild(
   Seq(
     organization := "com.malliina",
-    version := "1.0.0",
-    scalaVersion := "3.0.2"
+    version := "1.0.1",
+    scalaVersion := "3.1.1"
   )
 )
 
@@ -48,7 +48,7 @@ val frontend = project
     },
     scalaJSUseMainModuleInitializer := true,
     libraryDependencies ++= Seq(
-      ("com.lihaoyi" %%% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
+      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
     ),
     watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
     webpack / version := "5.74.0",
@@ -78,8 +78,8 @@ val generator = project
   .enablePlugins(LiveReloadPlugin)
   .settings(
     libraryDependencies ++= SbtUtils.loggingDeps ++ Seq(
-      "com.malliina" %% "primitives" % "3.0.0",
-      ("com.lihaoyi" %% "scalatags" % scalatagsVersion).cross(CrossVersion.for3Use2_13)
+      "com.malliina" %% "primitives" % "3.2.0",
+      "com.lihaoyi" %% "scalatags" % scalatagsVersion
     ),
     liveReloadRoot := (frontend / siteDir).value.toPath,
     refreshBrowsers := refreshBrowsers.triggeredBy(Dev / build).value,
@@ -90,6 +90,7 @@ val generator = project
       .value,
     Dev / build := (Compile / run)
       .toTask(s" dev target/site")
+      .dependsOn(Def.task(reloader.value.start()))
       .dependsOn(frontend / Compile / fastOptJS / build)
       .value,
     deploy := {

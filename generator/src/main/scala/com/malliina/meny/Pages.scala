@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 object Pages {
-  implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
+  // implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
 
   val time = tag("time")
   val titleTag = tag("title")
