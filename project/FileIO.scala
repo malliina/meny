@@ -1,18 +1,17 @@
+import io.circe.Encoder
+import io.circe.syntax.EncoderOps
+
 import java.io.{FileInputStream, FileOutputStream, IOException, InputStream, OutputStream}
 import java.nio.charset.StandardCharsets
 import java.nio.file.attribute.BasicFileAttributes
-import java.nio.file.{
-  FileVisitResult,
-  Files,
-  Path,
-  SimpleFileVisitor,
-  StandardCopyOption,
-  StandardOpenOption
-}
+import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor, StandardCopyOption, StandardOpenOption}
 import java.util.zip.GZIPOutputStream
 
 object FileIO {
   val log = AppLogger(getClass)
+
+  def writeJson[T: Encoder](t: T, to: Path): Path =
+    write(t.asJson.spaces2.getBytes(StandardCharsets.UTF_8), to)
 
   def writeLines(lines: Seq[String], to: Path): Path =
     write(lines.mkString("\n").getBytes(StandardCharsets.UTF_8), to)

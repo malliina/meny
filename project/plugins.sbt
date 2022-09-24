@@ -1,5 +1,9 @@
 scalaVersion := "2.12.16"
 
+libraryDependencies ++= Seq(
+  "com.malliina" %% "primitives" % "3.2.0"
+)
+
 Seq(
   "com.malliina" % "sbt-utils-maven" % "1.2.15",
   "com.malliina" % "live-reload" % "0.3.1",
