@@ -1,6 +1,7 @@
 import com.malliina.sbtutils.SbtUtils
 
 import complete.DefaultParsers.spaceDelimited
+import java.nio.file.{Path => JPath}
 
 inThisBuild(
   Seq(
@@ -13,7 +14,8 @@ inThisBuild(
 val Dev = config("dev")
 val Prod = config("prod")
 val deploy = inputKey[Unit]("Deploys the site")
-val writeManifest = taskKey[File]("Writes site manifest")
+val writeManifest = taskKey[JPath]("Writes site manifest")
+val manifestPath = settingKey[JPath]("Path to manifest file")
 
 val scalatagsVersion = GeneratorClientPlugin.scalatagsVersion
 
@@ -50,15 +52,19 @@ val generator = project
     liveReloadRoot := (frontend / siteDir).value.toPath,
     refreshBrowsers := refreshBrowsers.triggeredBy(Dev / build).value,
     watchSources := watchSources.value ++ Def.taskDyn(frontend / watchSources).value,
-    Prod / build := (Compile / run)
-      .toTask(s" prod frontend/target/site")
-      .dependsOn(frontend / Compile / fullOptJS / build)
-      .value,
-    Dev / build := (Compile / run)
-      .toTask(s" dev frontend/target/site")
+    Prod / build := Def.taskDyn {
+      (Compile / run)
+        .toTask(s" ${manifestPath.value}")
+        .dependsOn(Prod / writeManifest)
+        .dependsOn(frontend / Compile / fullOptJS / build)
+    }.value,
+    Dev / build := Def.taskDyn {
+      (Compile / run)
+      .toTask(s" ${manifestPath.value}")
       .dependsOn(Def.task(reloader.value.start()))
+      .dependsOn(Dev / writeManifest)
       .dependsOn(frontend / Compile / fastOptJS / build)
-      .value,
+    }.value,
     deploy := {
       val args = spaceDelimited("<arg>").parsed
       NPM.runProcessSync(
@@ -68,7 +74,16 @@ val generator = project
       )
     },
     Prod / deploy := deploy.toTask(" netlify deploy --prod").dependsOn(Prod / build).value,
-    Dev / deploy := deploy.toTask(" netlify deploy").dependsOn(Dev / build).value
+    Dev / deploy := deploy.toTask(" netlify deploy").dependsOn(Dev / build).value,
+    manifestPath := (target.value / "manifest.json").toPath,
+    Dev / writeManifest := {
+      val manifest = SiteManifest((frontend / siteDir).value.toPath, false)
+      FileIO.writeJson(manifest, manifestPath.value)
+    },
+    Prod / writeManifest := {
+      val manifest = SiteManifest((frontend / siteDir).value.toPath, true)
+      FileIO.writeJson(manifest, manifestPath.value)
+    }
   )
 
 val meny = project

@@ -11,6 +11,8 @@ object Generator:
         val path = Paths.get(root)
         log.info(s"Generating $mode from '$path'...")
         generate(mode == "prod", path)
+      case manifest :: Nil =>
+        throw new Exception("TODO: read manifest")
       case other =>
         throw new Exception(s"Invalid arguments: ${other.mkString(" ")}")
 
