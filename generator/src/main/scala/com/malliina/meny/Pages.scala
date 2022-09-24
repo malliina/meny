@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
-object Pages {
+object Pages:
   // implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
 
   val time = tag("time")
@@ -23,22 +23,19 @@ object Pages {
 
   def attrType[T](stringify: T => String): AttrValue[T] = (t: Builder, a: Attr, v: T) =>
     t.setAttr(a.name, Builder.GenericAttrValueSource(stringify(v)))
-}
 
-class Pages(isProd: Boolean, root: Path) {
+class Pages(isProd: Boolean, root: Path):
   val globalDescription = "Meny."
 
   val scripts =
-    if (isProd) {
-      scriptAt("frontend-opt.js", defer)
-    } else {
+    if isProd then scriptAt("frontend-opt.js", defer)
+    else
       modifier(
         scriptAt("library.js"),
         scriptAt("loader.js"),
         scriptAt("app.js"),
         script(src := LiveReload.script)
       )
-    }
 
   def meny2020 = index("Johannas meny")(
     div(`class` := "swiper-container")(
@@ -155,12 +152,12 @@ class Pages(isProd: Boolean, root: Path) {
   def scriptAt(file: String, modifiers: Modifier*): Text.TypedTag[String] =
     script(src := findAsset(file), modifiers)
 
-  def findAsset(file: String): String = {
+  def findAsset(file: String): String =
     val path = root.resolve(file)
     val dir = path.getParent
     val candidates = Files.list(dir).iterator().asScala.toList
     val lastSlash = file.lastIndexOf("/")
-    val nameStart = if (lastSlash == -1) 0 else lastSlash + 1
+    val nameStart = if lastSlash == -1 then 0 else lastSlash + 1
     val name = file.substring(nameStart)
     val dotIdx = name.lastIndexOf(".")
     val noExt = name.substring(0, dotIdx)
@@ -173,7 +170,5 @@ class Pages(isProd: Boolean, root: Path) {
       fail(s"Not found: '$file'. Found ${candidates.mkString(", ")}.")
     )
     root.relativize(found).toString.replace("\\", "/")
-  }
 
   def fail(message: String) = throw new Exception(message)
-}

@@ -57,18 +57,19 @@ val frontend = project
     Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
     webpackEmitSourceMaps := false,
     Compile / npmDependencies ++= Seq(
-      "swiper" -> "6.7.5"
+      "swiper" -> "8.4.2"
     ),
     Compile / npmDevDependencies ++= Seq(
-      "autoprefixer" -> "9.6.1",
+      "autoprefixer" -> "10.4.12",
       "cssnano" -> "4.1.10",
       "css-loader" -> "6.7.1",
       "less" -> "4.1.3",
       "less-loader" -> "11.0.0",
       "mini-css-extract-plugin" -> "2.6.1",
-      "postcss-import" -> "12.0.1",
-      "postcss-loader" -> "3.0.0",
-      "postcss-preset-env" -> "6.7.0",
+      "postcss" -> "8.4.16",
+      "postcss-import" -> "14.1.0",
+      "postcss-loader" -> "7.0.1",
+      "postcss-preset-env" -> "7.8.2",
       "webpack-merge" -> "5.8.0"
     )
   )
