@@ -57,7 +57,7 @@ val frontend = project
     Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
     webpackEmitSourceMaps := false,
     Compile / npmDependencies ++= Seq(
-      "swiper" -> "6.7.5"
+      "swiper" -> "8.4.2"
     ),
     Compile / npmDevDependencies ++= Seq(
       "autoprefixer" -> "10.4.12",
