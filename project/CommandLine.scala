@@ -2,7 +2,7 @@ import sbt._
 
 import scala.sys.process.Process
 
-object NPM {
+object CommandLine {
   val isWindows = sys.props("os.name").toLowerCase().contains("win")
   val cmdPrefix = if (isWindows) "cmd /c " else ""
 

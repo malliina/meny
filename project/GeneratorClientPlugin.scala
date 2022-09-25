@@ -11,11 +11,7 @@ object GeneratorClientPlugin extends AutoPlugin {
   val scalatagsVersion = "0.11.1"
   override def requires = ScalaJSBundlerPlugin
 
-  object autoImport {
-    val build = taskKey[Unit]("Builds app")
-    val siteDir = settingKey[File]("Site directory")
-  }
-  import autoImport._
+  import GeneratorKeys._
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     siteDir := baseDirectory.value / "target" / "site",

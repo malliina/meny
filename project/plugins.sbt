@@ -9,5 +9,6 @@ Seq(
   "com.malliina" % "live-reload" % "0.3.1",
   "org.scala-js" % "sbt-scalajs" % "1.10.1",
   "ch.epfl.scala" % "sbt-scalajs-bundler" % "0.21.0",
-  "org.scalameta" % "sbt-scalafmt" % "2.4.6"
+  "org.scalameta" % "sbt-scalafmt" % "2.4.6",
+  "com.eed3si9n" % "sbt-buildinfo" % "0.11.0"
 ) map addSbtPlugin
