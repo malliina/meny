@@ -10,7 +10,6 @@ object Frontend:
       ".swiper-container",
       SwiperOptions("horizontal", true, NavOptions(".swiper-button-next", ".swiper-button-prev"))
     )
-    println("Let's go!")
 
 @js.native
 trait NavOptions extends js.Object:

@@ -1,7 +1,8 @@
 import com.malliina.sbtutils.SbtUtils
 
-import java.nio.file.{Files, StandardCopyOption}
 import complete.DefaultParsers.spaceDelimited
+import java.nio.file.{Path => JPath}
+import GeneratorKeys._
 
 inThisBuild(
   Seq(
@@ -11,11 +12,7 @@ inThisBuild(
   )
 )
 
-val Dev = config("dev")
-val Prod = config("prod")
-val build = taskKey[Unit]("Builds app")
 val deploy = inputKey[Unit]("Deploys the site")
-val siteDir = settingKey[File]("Site directory")
 
 val scalatagsVersion = GeneratorClientPlugin.scalatagsVersion
 
@@ -23,39 +20,6 @@ val frontend = project
   .in(file("frontend"))
   .enablePlugins(GeneratorClientPlugin)
   .settings(
-    siteDir := (ThisBuild / baseDirectory).value / "target" / "site",
-    Compile / fullOptJS / build := (Compile / fullOptJS / webpack).value.map { af =>
-      val destDir = siteDir.value
-      Files.createDirectories(destDir.toPath)
-      val dest = (destDir / af.data.name).toPath
-      sLog.value.info(s"Write $dest ${af.metadata}")
-      Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
-    },
-    Compile / fastOptJS / build := (Compile / fastOptJS / webpack).value.map { af =>
-      val destDir = siteDir.value
-      Files.createDirectories(destDir.toPath)
-      val name = af.metadata.get(BundlerFileTypeAttr) match {
-        case Some(BundlerFileType.Application) => "app.js"
-        case Some(BundlerFileType.Library)     => "library.js"
-        case Some(BundlerFileType.Loader)      => "loader.js"
-        case _                                 => af.data.name
-      }
-      val dest = (destDir / name).toPath
-      sLog.value.info(
-        s"Write $dest from ${af.data.name} ${af.metadata} ${af.metadata.get(BundlerFileTypeAttr)}"
-      )
-      Files.copy(af.data.toPath, dest, StandardCopyOption.REPLACE_EXISTING).toFile
-    },
-    scalaJSUseMainModuleInitializer := true,
-    libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "scalatags" % scalatagsVersion
-    ),
-    watchSources += WatchSource(baseDirectory.value / "src", "*.scala", HiddenFileFilter),
-    webpack / version := "5.74.0",
-    startWebpackDevServer / version := "4.11.0",
-    Compile / fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
-    Compile / fullOptJS / webpackBundlingMode := BundlingMode.Application,
-    webpackEmitSourceMaps := false,
     Compile / npmDependencies ++= Seq(
       "swiper" -> "8.4.2"
     ),
@@ -76,27 +40,16 @@ val frontend = project
 
 val generator = project
   .in(file("generator"))
-  .enablePlugins(LiveReloadPlugin)
+  .enablePlugins(GeneratorPlugin)
   .settings(
+    clientProject := frontend,
     libraryDependencies ++= SbtUtils.loggingDeps ++ Seq(
       "com.malliina" %% "primitives" % "3.2.0",
       "com.lihaoyi" %% "scalatags" % scalatagsVersion
     ),
-    liveReloadRoot := (frontend / siteDir).value.toPath,
-    refreshBrowsers := refreshBrowsers.triggeredBy(Dev / build).value,
-    watchSources := watchSources.value ++ Def.taskDyn(frontend / watchSources).value,
-    Prod / build := (Compile / run)
-      .toTask(s" prod target/site")
-      .dependsOn(frontend / Compile / fullOptJS / build)
-      .value,
-    Dev / build := (Compile / run)
-      .toTask(s" dev target/site")
-      .dependsOn(Def.task(reloader.value.start()))
-      .dependsOn(frontend / Compile / fastOptJS / build)
-      .value,
     deploy := {
       val args = spaceDelimited("<arg>").parsed
-      NPM.runProcessSync(
+      CommandLine.runProcessSync(
         args.mkString(" "),
         (ThisBuild / baseDirectory).value,
         streams.value.log
