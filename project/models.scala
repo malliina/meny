@@ -6,3 +6,10 @@ object AppLogger {
     LoggerFactory.getLogger(name)
   }
 }
+
+sealed abstract class Mode(val name: String)
+
+object Mode {
+  case object Prod extends Mode("prod")
+  case object Dev extends Mode("dev")
+}

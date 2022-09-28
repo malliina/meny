@@ -1,7 +1,5 @@
 import com.malliina.sbtutils.SbtUtils
 
-import complete.DefaultParsers.spaceDelimited
-import java.nio.file.{Path => JPath}
 import GeneratorKeys._
 
 inThisBuild(
@@ -11,8 +9,6 @@ inThisBuild(
     scalaVersion := "3.1.1"
   )
 )
-
-val deploy = inputKey[Unit]("Deploys the site")
 
 val scalatagsVersion = GeneratorClientPlugin.scalatagsVersion
 
@@ -40,30 +36,20 @@ val frontend = project
 
 val generator = project
   .in(file("generator"))
-  .enablePlugins(GeneratorPlugin)
+  .enablePlugins(NetlifyPlugin)
   .settings(
     clientProject := frontend,
     libraryDependencies ++= SbtUtils.loggingDeps ++ Seq(
       "com.malliina" %% "primitives" % "3.2.0",
       "com.lihaoyi" %% "scalatags" % scalatagsVersion
-    ),
-    deploy := {
-      val args = spaceDelimited("<arg>").parsed
-      CommandLine.runProcessSync(
-        args.mkString(" "),
-        (ThisBuild / baseDirectory).value,
-        streams.value.log
-      )
-    },
-    Prod / deploy := deploy.toTask(" netlify deploy --prod").dependsOn(Prod / build).value,
-    Dev / deploy := deploy.toTask(" netlify deploy").dependsOn(Dev / build).value
+    )
   )
 
 val meny = project
   .in(file("."))
   .aggregate(frontend, generator)
   .settings(
-    build := (generator / Dev / build).value
+    build := (generator / build).value
   )
 
 Global / onChangedBuildSource := ReloadOnSourceChanges

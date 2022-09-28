@@ -40,12 +40,6 @@ const WebApp = merge(ScalaJS, {
       }
     ]
   },
-  // output: {
-  //   filename: '[name].js'
-  // },
-  // plugins: [
-  //   new MiniCssExtractPlugin({filename: '[name].css'})
-  // ]
 });
 
 module.exports = WebApp;
