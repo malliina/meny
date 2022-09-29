@@ -1,8 +1,8 @@
 import com.malliina.live.LiveReloadPlugin
 import com.malliina.live.LiveReloadPlugin.autoImport.{liveReloadRoot, refreshBrowsers, reloader}
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{FullOptStage, fastOptJS, fullOptJS, scalaJSStage}
-import sbt._
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{fastOptJS, fullOptJS}
 import sbt.Keys.{run, watchSources}
+import sbt._
 import sbtbuildinfo.BuildInfoPlugin
 import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys}
 
@@ -18,8 +18,8 @@ object GeneratorPlugin extends AutoPlugin {
 
     val clientProject = settingKey[Project]("Scala.js project")
   }
-  import autoImport._
   import GeneratorKeys._
+  import autoImport._
 
   override def projectSettings: Seq[Setting[_]] = Seq(
     isProd := ((Global / mode).value == Mode.Prod),
@@ -27,7 +27,7 @@ object GeneratorPlugin extends AutoPlugin {
     liveReloadRoot := siteDir.value.toPath,
     buildInfoKeys ++= Seq[BuildInfoKey](
       "siteDir" -> siteDir.value,
-      "isProd" -> ((Global / scalaJSStage).value == FullOptStage)
+      "isProd" -> isProd.value
     ),
     refreshBrowsers := refreshBrowsers.triggeredBy(build).value,
     build := Def.taskDyn {
