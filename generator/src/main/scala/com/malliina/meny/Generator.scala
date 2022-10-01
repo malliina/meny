@@ -11,7 +11,7 @@ object Generator:
   def main(args: Array[String]): Unit =
     generate(BuildInfo.isProd, BuildInfo.siteDir.toPath)
 
-  def generate(isProd: Boolean, dist: Path) =
+  def generate(isProd: Boolean, dist: Path): Unit =
     val mode = if isProd then "prod" else "dev"
     log.info(s"Generating $mode build to $dist...")
     Files.createDirectories(dist)

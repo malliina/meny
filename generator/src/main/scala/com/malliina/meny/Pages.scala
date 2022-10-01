@@ -13,8 +13,6 @@ import java.time.format.DateTimeFormatter
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 object Pages:
-  // implicit val fullUrl: AttrValue[FullUrl] = attrType[FullUrl](_.url)
-
   val time = tag("time")
   val titleTag = tag("title")
 
@@ -64,8 +62,7 @@ class Pages(isProd: Boolean, root: Path):
       ),
       div(`class` := "swiper-button swiper-button-next"),
       div(`class` := "swiper-button swiper-button-prev")
-    ),
-    footer(`class` := "meny-footer")
+    )
   )
 
   def meny2021 = index("Johannas meny 2021")(
@@ -95,8 +92,7 @@ class Pages(isProd: Boolean, root: Path):
       ),
       div(`class` := "swiper-button swiper-button-next"),
       div(`class` := "swiper-button swiper-button-prev")
-    ),
-    footer(`class` := "meny-footer")
+    )
   )
 
   def dish(food: String, drink: String) = modifier(p(food), separator, p(drink))
