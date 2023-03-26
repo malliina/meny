@@ -1,5 +1,6 @@
-import GeneratorKeys.build
-import GeneratorPlugin.autoImport.isProd
+import com.malliina.rollup.CommonKeys.{build, isProd}
+import com.malliina.rollup.GeneratorPlugin
+import com.malliina.nodejs.IO
 import sbt.Keys.{baseDirectory, streams}
 import sbt.{AutoPlugin, Plugins, Setting, ThisBuild, taskKey}
 
@@ -11,13 +12,12 @@ object NetlifyPlugin extends AutoPlugin {
   }
   import autoImport._
 
-  override def projectSettings: Seq[Setting[_]] = Seq(
+  override def projectSettings: Seq[Setting[?]] = Seq(
     deploy := {
-      val cmd =
-        if (isProd.value) "netlify deploy --prod"
-        else "netlify deploy"
-      CommandLine.runProcessSync(
-        cmd,
+      val cmd = Seq("netlify", "deploy")
+      val params = if (isProd.value) List("--prod") else Nil
+      IO.runProcessSync(
+        cmd ++ params,
         (ThisBuild / baseDirectory).value,
         streams.value.log
       )

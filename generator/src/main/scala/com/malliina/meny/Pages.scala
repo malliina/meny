@@ -26,12 +26,10 @@ class Pages(isProd: Boolean, root: Path):
   val globalDescription = "Meny."
 
   val scripts =
-    if isProd then scriptAt("frontend-opt.js", defer)
+    if isProd then scriptAt("frontend.js", defer)
     else
       modifier(
-        scriptAt("library.js"),
-        scriptAt("loader.js"),
-        scriptAt("app.js"),
+        scriptAt("frontend.js"),
         script(src := LiveReload.script)
       )
 
@@ -133,7 +131,6 @@ class Pages(isProd: Boolean, root: Path):
         meta(property := "og:title", content := titleText),
         meta(property := "og:description", content := globalDescription),
         styleAt("styles.css"),
-        styleAt("vendors.css"),
         styleAt("fonts.css")
       ),
       body(
@@ -149,22 +146,6 @@ class Pages(isProd: Boolean, root: Path):
     script(src := findAsset(file), modifiers)
 
   def findAsset(file: String): String =
-    val path = root.resolve(file)
-    val dir = path.getParent
-    val candidates = Files.list(dir).iterator().asScala.toList
-    val lastSlash = file.lastIndexOf("/")
-    val nameStart = if lastSlash == -1 then 0 else lastSlash + 1
-    val name = file.substring(nameStart)
-    val dotIdx = name.lastIndexOf(".")
-    val noExt = name.substring(0, dotIdx)
-    val ext = name.substring(dotIdx + 1)
-    val result = candidates.filter { p =>
-      val candidateName = p.getFileName.toString
-      candidateName.startsWith(noExt) && candidateName.endsWith(ext)
-    }.sortBy { p => Files.getLastModifiedTime(p) }.reverse.headOption
-    val found = result.getOrElse(
-      fail(s"Not found: '$file'. Found ${candidates.mkString(", ")}.")
-    )
-    root.relativize(found).toString.replace("\\", "/")
+    HashedAssets.assets.getOrElse(file, fail(s"Not found: '$file'."))
 
   def fail(message: String) = throw new Exception(message)
