@@ -22,7 +22,8 @@ val generator = project
     libraryDependencies ++= SbtUtils.loggingDeps ++ Seq(
       "com.malliina" %% "primitives" % "3.4.0",
       "com.lihaoyi" %% "scalatags" % "0.12.0"
-    )
+    ),
+    Compile / compile := (Compile / compile).dependsOn(frontend / build).value
   )
 
 val meny = project
