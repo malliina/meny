@@ -1,10 +1,10 @@
-scalaVersion := "2.12.16"
+scalaVersion := "2.12.18"
 
 libraryDependencies ++= Seq(
   "com.malliina" %% "primitives" % "3.4.0"
 )
 
-val utilsVersion = "1.6.12"
+val utilsVersion = "1.6.19"
 
 Seq(
   "com.malliina" % "sbt-utils-maven" % utilsVersion,
