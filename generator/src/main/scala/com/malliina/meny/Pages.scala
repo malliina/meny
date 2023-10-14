@@ -93,6 +93,10 @@ class Pages(isProd: Boolean, root: Path):
     )
   )
 
+  def notFound = index("Not found")(
+    div(`class` := "centered")("Not found!")
+  )
+
   def dish(food: String, drink: String) = modifier(p(food), separator, p(drink))
 
   def separator = hr

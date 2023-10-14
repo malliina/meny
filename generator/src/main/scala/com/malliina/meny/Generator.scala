@@ -17,8 +17,9 @@ object Generator:
     Files.createDirectories(dist)
     val pages = Pages(isProd, dist)
     val pageMap = Map(
-      pages.meny2020 -> "2020.html",
-      pages.meny2021 -> "index.html"
+      "index.html" -> pages.meny2021,
+      "2020.html" -> pages.meny2020,
+      "404.html" -> pages.notFound
     )
-    pageMap.foreach { case (page, file) => page.write(dist.resolve(file)) }
+    pageMap.foreach { case (file, page) => page.write(dist.resolve(file)) }
     NetlifyClient.writeHeaders(dist)

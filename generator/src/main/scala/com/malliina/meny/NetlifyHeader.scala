@@ -43,7 +43,7 @@ class NetlifyClient:
       WebsiteFile(relative, cache)
     }
 
-  def isCacheable(p: Path) = p.getFileName.toString.count(_ == '.') == 2
+  private def isCacheable(p: Path) = p.getFileName.toString.count(_ == '.') == 2
 
   private def writeHeadersFile(files: Seq[WebsiteFile], to: Path): Path =
     val netlifyHeaders = NetlifyHeader.security +: files.map { file =>
@@ -54,5 +54,5 @@ class NetlifyClient:
     }
     writeLines(netlifyHeaders.map(_.asString), to)
 
-  def writeLines(lines: Seq[String], to: Path) =
+  private def writeLines(lines: Seq[String], to: Path) =
     FileIO.write(lines.mkString.getBytes(StandardCharsets.UTF_8), to)
