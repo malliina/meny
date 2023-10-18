@@ -21,5 +21,6 @@ object Generator:
       "2020.html" -> pages.meny2020,
       "404.html" -> pages.notFound
     )
-    pageMap.foreach { case (file, page) => page.write(dist.resolve(file)) }
+    pageMap.foreach: (file, page) =>
+      page.write(dist.resolve(file))
     NetlifyClient.writeHeaders(dist)

@@ -8,7 +8,9 @@ import scala.collection.JavaConverters.asScalaIteratorConverter
 case class NetlifyHeader(path: String, headers: Map[String, String]):
   // https://docs.netlify.com/routing/headers/#syntax-for-the-headers-file
   def asString: String =
-    val headerList = headers.map { case (k, v) => s"$k: $v" }
+    val headerList = headers
+      .map: (k, v) =>
+        s"$k: $v"
       .mkString("\n  ", "\n  ", "\n")
     s"$path$headerList"
 
@@ -35,23 +37,26 @@ class NetlifyClient:
     writeLines(rs.map(_.asString), dir.resolve("_redirects"))
 
   def cached(dir: Path): Seq[WebsiteFile] =
-    Files.walk(dir).iterator().asScala.toList.map { p =>
-      val relative = dir.relativize(p)
-      val cache =
-        if isCacheable(relative) then CacheControls.eternalCache
-        else CacheControls.defaultCacheControl
-      WebsiteFile(relative, cache)
-    }
+    Files
+      .walk(dir)
+      .iterator()
+      .asScala
+      .toList
+      .map: p =>
+        val relative = dir.relativize(p)
+        val cache =
+          if isCacheable(relative) then CacheControls.eternalCache
+          else CacheControls.defaultCacheControl
+        WebsiteFile(relative, cache)
 
   private def isCacheable(p: Path) = p.getFileName.toString.count(_ == '.') == 2
 
   private def writeHeadersFile(files: Seq[WebsiteFile], to: Path): Path =
-    val netlifyHeaders = NetlifyHeader.security +: files.map { file =>
+    val netlifyHeaders = NetlifyHeader.security +: files.map: file =>
       NetlifyHeader(
         s"/${file.uri}",
         Map(CacheControl.headerName -> file.cacheControl.value)
       )
-    }
     writeLines(netlifyHeaders.map(_.asString), to)
 
   private def writeLines(lines: Seq[String], to: Path) =

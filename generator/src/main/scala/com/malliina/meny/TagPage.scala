@@ -12,7 +12,7 @@ case class TagPage(tags: Text.TypedTag[String]):
 
 object TagPage:
   val log = AppLogger(getClass)
-  val DocTypeTag = "<!DOCTYPE html>"
+  private val DocTypeTag = "<!DOCTYPE html>"
 
   def write(page: TagPage, to: Path): Path =
     val bytes = (DocTypeTag + page.render).getBytes(StandardCharsets.UTF_8)

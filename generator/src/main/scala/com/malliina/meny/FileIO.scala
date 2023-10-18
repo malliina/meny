@@ -28,14 +28,11 @@ object FileIO:
     log.info(s"Copied ${from.toAbsolutePath} to ${to.toAbsolutePath}.")
 
   def gzip(src: Path, dest: Path): Unit =
-    using(new FileInputStream(src.toFile)) { in =>
-      using(new FileOutputStream(dest.toFile)) { out =>
-        using(new GZIPOutputStream(out, 8192)) { gzip =>
+    using(new FileInputStream(src.toFile)): in =>
+      using(new FileOutputStream(dest.toFile)): out =>
+        using(new GZIPOutputStream(out, 8192)): gzip =>
           copyStream(in, gzip)
           gzip.finish()
-        }
-      }
-    }
 
   // Adapted from sbt-io
   private def copyStream(in: InputStream, out: OutputStream): Unit =
