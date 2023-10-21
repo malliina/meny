@@ -1,6 +1,6 @@
+import com.malliina.nodejs.IO
 import com.malliina.rollup.CommonKeys.{build, isProd}
 import com.malliina.rollup.GeneratorPlugin
-import com.malliina.nodejs.IO
 import sbt.Keys.{baseDirectory, streams}
 import sbt.{AutoPlugin, Plugins, Setting, ThisBuild, taskKey}
 
@@ -10,7 +10,7 @@ object NetlifyPlugin extends AutoPlugin {
   object autoImport {
     val deploy = taskKey[Unit]("Deploys the site")
   }
-  import autoImport._
+  import autoImport.*
 
   override def projectSettings: Seq[Setting[?]] = Seq(
     deploy := {

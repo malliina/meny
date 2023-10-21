@@ -2,8 +2,7 @@ package com.malliina.meny
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path}
-
-import scala.collection.JavaConverters.asScalaIteratorConverter
+import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 case class NetlifyHeader(path: String, headers: Map[String, String]):
   // https://docs.netlify.com/routing/headers/#syntax-for-the-headers-file
@@ -36,7 +35,7 @@ class NetlifyClient:
   def writeRedirects(rs: Seq[RedirectEntry], dir: Path) =
     writeLines(rs.map(_.asString), dir.resolve("_redirects"))
 
-  def cached(dir: Path): Seq[WebsiteFile] =
+  private def cached(dir: Path): Seq[WebsiteFile] =
     Files
       .walk(dir)
       .iterator()

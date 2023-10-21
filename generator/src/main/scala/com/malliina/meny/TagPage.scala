@@ -1,9 +1,9 @@
 package com.malliina.meny
 
+import scalatags.Text
+
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path, StandardOpenOption}
-
-import scalatags.Text
 
 case class TagPage(tags: Text.TypedTag[String]):
   override def toString = tags.toString()

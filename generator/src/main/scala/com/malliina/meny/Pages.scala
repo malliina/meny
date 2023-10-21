@@ -1,16 +1,12 @@
 package com.malliina.meny
 
-import com.malliina.http.FullUrl
 import com.malliina.live.LiveReload
 import com.malliina.meny.Pages.*
 import scalatags.Text
 import scalatags.Text.all.*
 import scalatags.text.Builder
 
-import java.nio.file.{Files, Path}
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import scala.jdk.CollectionConverters.IteratorHasAsScala
+import java.nio.file.Path
 
 object Pages:
   val time = tag("time")
@@ -134,6 +130,11 @@ class Pages(isProd: Boolean, root: Path):
         meta(name := "twitter:creator", content := "@kungmalle"),
         meta(property := "og:title", content := titleText),
         meta(property := "og:description", content := globalDescription),
+        link(
+          rel := "shortcut icon",
+          `type` := "image/jpeg",
+          href := inlineOrAsset("img/jag.jpg")
+        ),
         styleAt("styles.css"),
         styleAt("fonts.css")
       ),
@@ -143,13 +144,15 @@ class Pages(isProd: Boolean, root: Path):
     )
   )
 
-  def styleAt(file: String): Text.TypedTag[String] =
+  private def styleAt(file: String): Text.TypedTag[String] =
     link(rel := "stylesheet", href := findAsset(file))
 
-  def scriptAt(file: String, modifiers: Modifier*): Text.TypedTag[String] =
+  private def scriptAt(file: String, modifiers: Modifier*): Text.TypedTag[String] =
     script(src := findAsset(file), modifiers)
 
-  def findAsset(file: String): String =
-    HashedAssets.assets.getOrElse(file, fail(s"Not found: '$file'."))
+  private def inlineOrAsset(file: String) = HashedAssets.dataUris.getOrElse(file, findAsset(file))
 
-  def fail(message: String) = throw new Exception(message)
+  private def findAsset(file: String): String =
+    HashedAssets.assets.get(file).map(p => s"/$p").getOrElse(fail(s"Not found: '$file'."))
+
+  private def fail(message: String) = throw new Exception(message)

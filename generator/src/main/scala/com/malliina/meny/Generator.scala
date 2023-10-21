@@ -2,8 +2,7 @@ package com.malliina.meny
 
 import buildinfo.BuildInfo
 
-import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{Files, Path}
 
 object Generator:
   val log = AppLogger(getClass)
@@ -11,7 +10,7 @@ object Generator:
   def main(args: Array[String]): Unit =
     generate(BuildInfo.isProd, BuildInfo.siteDir.toPath)
 
-  def generate(isProd: Boolean, dist: Path): Unit =
+  private def generate(isProd: Boolean, dist: Path): Unit =
     val mode = if isProd then "prod" else "dev"
     log.info(s"Generating $mode build to $dist...")
     Files.createDirectories(dist)
