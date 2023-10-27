@@ -1,7 +1,7 @@
 scalaVersion := "2.12.18"
 
 libraryDependencies ++= Seq(
-  "com.malliina" %% "primitives" % "3.4.5"
+  "com.malliina" %% "primitives" % "3.4.6"
 )
 
 val utilsVersion = "1.6.19"
